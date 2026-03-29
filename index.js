@@ -3,7 +3,9 @@ const http = require("http");
 const SECRET = "emporos123";
 
 const server = http.createServer(async (req, res) => {
+
   if (req.url.startsWith("/generate")) {
+
     const url = new URL(req.url, "http://" + req.headers.host);
     const key = url.searchParams.get("key");
 
@@ -16,37 +18,41 @@ const server = http.createServer(async (req, res) => {
     const lang = url.searchParams.get("lang") || "en";
 
     try {
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": "Bearer " + process.env.OPENAI_API_KEY,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          model: "gpt-4.1-mini",
-          messages: [
-            {
-              role: "user",
-              content: "Generate high-converting buyer intent ads for " + product + " in " + lang
-            }
-          ],
-          max_tokens: 300
-        })
-      });
+      const response = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + process.env.GOOGLE_API_KEY,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: "Create high-converting buyer intent ads for " + product + " in " + lang
+                  }
+                ]
+              }
+            ]
+          })
+        }
+      );
 
       const data = await response.json();
 
       res.writeHead(200, { "Content-Type": "application/json" });
       return res.end(JSON.stringify(data));
+
     } catch (err) {
       res.writeHead(500);
-      return res.end("Erro ao gerar campanha");
+      return res.end("Erro");
     }
   }
 
   if (req.url === "/") {
     res.writeHead(200);
-    return res.end("Emporos seguro");
+    return res.end("Emporos Google ativo");
   }
 
   res.writeHead(404);
