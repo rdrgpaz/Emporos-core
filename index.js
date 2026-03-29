@@ -19,7 +19,7 @@ const server = http.createServer(async (req, res) => {
 
     try {
       const response = await fetch(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + process.env.GOOGLE_API_KEY,
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + process.env.GOOGLE_API_KEY,
         {
           method: "POST",
           headers: {
@@ -30,7 +30,7 @@ const server = http.createServer(async (req, res) => {
               {
                 parts: [
                   {
-                    text: "Create high-converting buyer intent ads for " + product + " in " + lang
+                    text: "Create high-converting buyer intent ads for " + product + " in " + lang + ". Include keywords, headlines and descriptions."
                   }
                 ]
               }
@@ -46,7 +46,7 @@ const server = http.createServer(async (req, res) => {
 
     } catch (err) {
       res.writeHead(500);
-      return res.end("Erro");
+      return res.end("Erro ao gerar campanha");
     }
   }
 
@@ -57,6 +57,7 @@ const server = http.createServer(async (req, res) => {
 
   res.writeHead(404);
   res.end("Not found");
+
 });
 
 const PORT = process.env.PORT || 3000;
