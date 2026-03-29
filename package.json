@@ -3,8 +3,8 @@ body: JSON.stringify({
   messages: [
     {
       role: "user",
-      content: `Generate high-converting buyer intent ads for ${product} in ${lang}`
+      content: "Generate high-converting buyer intent ads for " + product + " in " + lang
     }
   ],
-  max_tokens: 500
+  max_tokens: 300
 })
