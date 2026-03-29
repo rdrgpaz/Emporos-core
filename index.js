@@ -17,6 +17,27 @@ const server = http.createServer(async (req, res) => {
     const product = url.searchParams.get("product") || "unknown";
     const lang = url.searchParams.get("lang") || "en";
 
+    const prompt = `
+Generate a HIGH-CONVERTING Google Ads campaign.
+
+Product: ${product}
+Language: ${lang}
+
+STRICT RULES:
+- Only buyer intent keywords
+- No "free", "review", "pdf", "download"
+- Focus on people ready to buy
+
+RETURN ONLY JSON in this format:
+
+{
+  "keywords": [],
+  "headlines": [],
+  "descriptions": [],
+  "negative_keywords": []
+}
+`;
+
     try {
       const response = await fetch(
         "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + process.env.GOOGLE_API_KEY,
@@ -29,9 +50,7 @@ const server = http.createServer(async (req, res) => {
             contents: [
               {
                 parts: [
-                  {
-                    text: "Create high-converting buyer intent ads for " + product + " in " + lang + ". Include keywords, headlines and descriptions."
-                  }
+                  { text: prompt }
                 ]
               }
             ]
@@ -41,8 +60,10 @@ const server = http.createServer(async (req, res) => {
 
       const data = await response.json();
 
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+
       res.writeHead(200, { "Content-Type": "application/json" });
-      return res.end(JSON.stringify(data));
+      return res.end(text);
 
     } catch (err) {
       res.writeHead(500);
@@ -52,7 +73,7 @@ const server = http.createServer(async (req, res) => {
 
   if (req.url === "/") {
     res.writeHead(200);
-    return res.end("Emporos Google ativo");
+    return res.end("Emporos Google otimizado");
   }
 
   res.writeHead(404);
